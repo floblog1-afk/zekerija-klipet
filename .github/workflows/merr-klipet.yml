@@ -1,0 +1,38 @@
+name: Merr klipet nga Google Drive
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Shkarko klipet nga Drive
+        run: |
+          mkdir -p clips
+          get() {
+            curl -sSL --fail --retry 3 -o "clips/$1.mp4" "https://drive.usercontent.google.com/download?id=$2&export=download&confirm=t"
+            t=$(file -b --mime-type "clips/$1.mp4")
+            echo "$1: $(stat -c %s clips/$1.mp4) bytes, $t"
+            [ "$t" = "video/mp4" ] || { echo "GABIM: $1 nuk eshte video (kontrollo ndarjen ne Drive)"; exit 1; }
+          }
+          get 001 1bU66p8ru0rw3jt7dzXwyribgY4fJkzza
+          get 002 1EQaxG6m4hMO94IwAAmC99iQ6wNsFr7wS
+          get 003 1WH03uJY1h048KrhPcgXr58vKBzGv50r4
+          get 004 1VSHcS7AO8fCm_hIp1qAFl09nMwbWUXVM
+          get 005 1bopUuq2XgA5mwDl17uQ_r2L7_YjTAx3N
+          get 006 1RbdezBW8sCnXns65YRGQPUfaNaIyA_gT
+          get 007 1jH-Kdwy5dV12bVW9dX1i9HmQDDhICQwr
+          get 008 1lI1uFpdytuzWFoxy2dUu0XMTw9-J3Qwn
+          get 009 14yJUckE6iIXJ6LZ6I6XkThRyTLA9TdsR
+          get 010 1lPqYw9ANnGbHcxIfKgc-N94pXhPFAqMk
+          get 011 1YF3XUchUOro7igkcAdz64rsCWIkESG-_
+          get 012 1BOYiF3_Vw24v-5z6c2xekDaI4-Tr7oiE
+          get 013 1xng9iutFh06XgEEtm9OVS5qje6Jf93gU
+          get 014 1LgcTwCRIuVXCAFiQEtVhEPf-e7AkQN84
+          get 015 16sNeC1QozuVP2PPZJexpP3FdItbXXj76
+          get 016 1EVy3_LC-_1XrWRDPAO5OxHOn3hcvDXLL
+          get 021 1d9M70l0mhYZVjbgcJhPsAY4h5wedaheX
+      - name: Publiko si release "klipet"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create klipet clips/*.mp4 --repo "$GITHUB_REPOSITORY" --title "Klipet" --notes "Zekerija klipet"
